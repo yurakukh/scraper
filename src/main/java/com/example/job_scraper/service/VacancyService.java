@@ -7,7 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface VacancyService {
-    Page<VacancyResponseDto> findAll(VacancySearchParameters parameters, Pageable pageable);
+    Page<VacancyResponseDto> getAll(VacancySearchParameters parameters, Pageable pageable);
 
-    VacancyDetailsDto findById(Long id);
+    VacancyDetailsDto getById(Long id);
 }

@@ -3,6 +3,7 @@ package com.example.job_scraper.service;
 import com.example.job_scraper.dto.VacancyDetailsDto;
 import com.example.job_scraper.dto.VacancyResponseDto;
 import com.example.job_scraper.dto.VacancySearchParameters;
+import com.example.job_scraper.exception.EntityNotFoundException;
 import com.example.job_scraper.mapper.VacancyMapper;
 import com.example.job_scraper.repository.VacancyRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,15 +19,15 @@ public class VacancyServiceImpl implements VacancyService {
     private final VacancyMapper vacancyMapper;
 
     @Override
-    public Page<VacancyResponseDto> findAll(VacancySearchParameters parameters, Pageable pageable) {
+    public Page<VacancyResponseDto> getAll(VacancySearchParameters parameters, Pageable pageable) {
         return vacancyRepository.findAll(pageable)
                 .map(vacancyMapper::toResponseDto);
     }
 
     @Override
-    public VacancyDetailsDto findById(Long id) {
+    public VacancyDetailsDto getById(Long id) {
         return vacancyRepository.findById(id)
                 .map(vacancyMapper::toDetailsDto)
-                .orElseThrow(() -> new RuntimeException("Can't find vacancy with id: " + id));
+                .orElseThrow(() -> new EntityNotFoundException("Can't find vacancy with id: " + id));
     }
 }
