@@ -6,6 +6,7 @@ import com.example.job_scraper.dto.VacancySearchParameters;
 import com.example.job_scraper.exception.EntityNotFoundException;
 import com.example.job_scraper.mapper.VacancyMapper;
 import com.example.job_scraper.repository.VacancyRepository;
+import com.example.job_scraper.specification.VacancySpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,7 +21,7 @@ public class VacancyServiceImpl implements VacancyService {
 
     @Override
     public Page<VacancyResponseDto> getAll(VacancySearchParameters parameters, Pageable pageable) {
-        return vacancyRepository.findAll(pageable)
+        return vacancyRepository.findAll(VacancySpecification.build(parameters), pageable)
                 .map(vacancyMapper::toResponseDto);
     }
 
