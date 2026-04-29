@@ -1,4 +1,4 @@
-package com.example.job_scraper.service;
+package com.example.job_scraper.service.vacancy;
 
 import com.example.job_scraper.dto.VacancyDetailsDto;
 import com.example.job_scraper.dto.VacancyResponseDto;

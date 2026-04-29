@@ -3,7 +3,7 @@ package com.example.job_scraper.controller;
 import com.example.job_scraper.dto.VacancyDetailsDto;
 import com.example.job_scraper.dto.VacancyResponseDto;
 import com.example.job_scraper.dto.VacancySearchParameters;
-import com.example.job_scraper.service.VacancyService;
+import com.example.job_scraper.service.vacancy.VacancyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

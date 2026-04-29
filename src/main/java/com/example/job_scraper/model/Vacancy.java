@@ -32,7 +32,7 @@ public class Vacancy {
 
     private String location;
 
-    @Column(length = 2500)
+    @Column(length = 5000)
     private String description;
 
     @Column(unique = true, nullable = false, length = 1000)
