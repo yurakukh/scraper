@@ -7,7 +7,7 @@ import org.mapstruct.NullValueCheckStrategy;
         componentModel = "spring",
         injectionStrategy = InjectionStrategy.CONSTRUCTOR,
         nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS,
-        implementationPackage = "com.example.job_scraper"
+        unmappedTargetPolicy = org.mapstruct.ReportingPolicy.WARN
 )
 public interface MapperConfig {
 }

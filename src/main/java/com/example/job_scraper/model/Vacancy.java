@@ -32,10 +32,10 @@ public class Vacancy {
 
     private String location;
 
-    @Column(length = 5000)
+    @Column(length = 2000)
     private String description;
 
-    @Column(unique = true, nullable = false, length = 1000)
+    @Column(unique = true, nullable = false, length = 500)
     private String link;
 
     @ElementCollection(fetch = FetchType.LAZY)
@@ -49,7 +49,6 @@ public class Vacancy {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    @Setter(AccessLevel.NONE)
     @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted = false;
 }

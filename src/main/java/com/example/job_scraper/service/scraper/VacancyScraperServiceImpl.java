@@ -1,6 +1,7 @@
 package com.example.job_scraper.service.scraper;
 
 import com.example.job_scraper.model.Vacancy;
+import com.example.job_scraper.service.vacancy.VacancyService;
 import jakarta.annotation.PostConstruct;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -16,11 +17,7 @@ public class VacancyScraperServiceImpl implements VacancyScraperService {
 
     private final VacancyParser vacancyParser;
     private final PlaywrightService playwrightService;
-
-    @PostConstruct
-    public void test() {
-        scrape();
-    }
+    private final VacancyService vacancyService;
 
     @Override
     public void scrape() {
@@ -28,6 +25,8 @@ public class VacancyScraperServiceImpl implements VacancyScraperService {
         Document document = Jsoup.parse(html);
         List<Vacancy> vacancies = vacancyParser.parse(document);
         enrichWithDescription(vacancies);
+
+        vacancyService.syncVacancies(vacancies);
 
         //for testing
         vacancies.forEach(v ->
@@ -47,7 +46,7 @@ public class VacancyScraperServiceImpl implements VacancyScraperService {
 
     private void enrichWithDescription(List<Vacancy> vacancies) {
         vacancies.stream()
-                .limit(3)
+                .limit(10)
                 .forEach(v -> {
                     try {
                         String html = playwrightService.getJobDescription(v.getLink());
@@ -55,7 +54,7 @@ public class VacancyScraperServiceImpl implements VacancyScraperService {
                         String description = vacancyParser.parseDescription(doc);
                         v.setDescription(description);
                     } catch (Exception e) {
-                        throw new RuntimeException("Failed to fetch description for vacancy: " + v.getLink(), e);
+                        System.out.println("Failed to fetch description for vacancy: " + v.getLink());
                     }
                 });
     }
