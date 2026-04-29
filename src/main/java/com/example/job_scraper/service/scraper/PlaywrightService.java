@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class PlaywrightService {
 
-    private static final int MAX_PAGINATION_ITERATIONS = 3;
+    private static final int MAX_PAGINATION_ITERATIONS = 1;
     private static final String JOB_ITEM_SELECTOR = "div[data-testid='job-list-item']";
     private static final String LOAD_MORE_BUTTON_SELECTOR = "button[data-testid='load-more']";
     public static final String DESCRIPTION_SELECTOR = "div[data-testid='careerPage']";
@@ -47,8 +47,9 @@ public class PlaywrightService {
         String cleanUrl = url.split("#")[0];
 
         try (Page page = createPage()) {
-            navigate(page, cleanUrl, WaitUntilState.DOMCONTENTLOADED);
+            navigate(page, cleanUrl, WaitUntilState.LOAD);
             page.waitForSelector(DESCRIPTION_SELECTOR);
+            page.waitForTimeout(2000);
             return page.content();
         }
     }

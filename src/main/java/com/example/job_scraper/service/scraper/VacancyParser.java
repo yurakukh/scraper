@@ -66,3 +66,5 @@ public class VacancyParser {
         return el != null ? el.text().substring(0, 999) : "";
     }
 }
+
+
