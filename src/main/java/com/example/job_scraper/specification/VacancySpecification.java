@@ -3,9 +3,9 @@ package com.example.job_scraper.specification;
 import com.example.job_scraper.dto.VacancySearchParameters;
 import com.example.job_scraper.model.Vacancy;
 import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.Predicate;
 import java.util.ArrayList;
 import java.util.List;
-import jakarta.persistence.criteria.Predicate;
 import java.util.Locale;
 import org.springframework.data.jpa.domain.Specification;
 

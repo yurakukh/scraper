@@ -1,7 +1,10 @@
 package com.example.job_scraper.service.scraper;
 
 import com.example.job_scraper.model.Vacancy;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -25,7 +28,9 @@ public class VacancyParser {
         for (Element vacancy : vacancies) {
 
             Element linkEl = vacancy.selectFirst(LINK_SELECTOR);
-            if (linkEl == null) continue;
+            if (linkEl == null) {
+                continue;
+            }
 
             Element titleEl = vacancy.selectFirst(H4_SELECTOR);
             String title = titleEl != null
@@ -47,7 +52,6 @@ public class VacancyParser {
                     ? link
                     : URL + link;
 
-
             Set<String> tags = new HashSet<>(vacancy.select(TAGS_SELECTOR).eachText());
 
             Vacancy v = createVacancy(title, company, fullLink, location, tags);
@@ -56,7 +60,13 @@ public class VacancyParser {
         return result;
     }
 
-    private static Vacancy createVacancy(String title, String company, String fullLink, String location, Set<String> tags) {
+    private static Vacancy createVacancy(
+            String title,
+            String company,
+            String fullLink,
+            String location,
+            Set<String> tags
+    ) {
         Vacancy v = new Vacancy();
         v.setTitle(title);
         v.setCompanyName(company);

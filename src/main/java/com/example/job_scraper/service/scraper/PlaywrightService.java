@@ -1,16 +1,24 @@
 package com.example.job_scraper.service.scraper;
 
-import com.microsoft.playwright.*;
+import com.microsoft.playwright.Browser;
+import com.microsoft.playwright.BrowserContext;
+import com.microsoft.playwright.BrowserType;
+import com.microsoft.playwright.Locator;
+import com.microsoft.playwright.Page;
+import com.microsoft.playwright.Playwright;
 import com.microsoft.playwright.options.WaitUntilState;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
 public class PlaywrightService {
     private static final String JOB_ITEM_SELECTOR = "div[data-testid='job-list-item']";
     private static final String LOAD_MORE_BUTTON_SELECTOR = "button[data-testid='load-more']";
-    public static final int MAX_VACANCIES = 200;
+
+    @Value("${scraper.max-vacancies}")
+    private int maxVacancies;
 
     private Playwright playwright;
     private Browser browser;
@@ -30,7 +38,7 @@ public class PlaywrightService {
 
     public String getPageContent(String url) {
         Page page = createPage();
-        navigate(page,url, WaitUntilState.DOMCONTENTLOADED);
+        navigate(page, url, WaitUntilState.DOMCONTENTLOADED);
         page.waitForSelector(JOB_ITEM_SELECTOR);
         loadAllVacancies(page);
         String content = page.content();
@@ -47,11 +55,9 @@ public class PlaywrightService {
     }
 
     private void loadAllVacancies(Page page) {
-
         int previousCount = 0;
-
-
         Locator button = page.locator(LOAD_MORE_BUTTON_SELECTOR);
+
         if (button.count() > 0) {
             button.first().click();
             page.waitForTimeout(3000);
@@ -59,16 +65,13 @@ public class PlaywrightService {
 
         while (true) {
             int currentCount = page.locator(JOB_ITEM_SELECTOR).count();
-
-            if (currentCount >= MAX_VACANCIES) {
+            if (currentCount >= maxVacancies) {
                 break;
             }
             if (currentCount == previousCount) {
                 break;
             }
-
             previousCount = currentCount;
-
             page.mouse().wheel(0, 3000);
             page.waitForTimeout(1000);
         }
