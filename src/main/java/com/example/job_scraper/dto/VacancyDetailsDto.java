@@ -7,7 +7,6 @@ public record VacancyDetailsDto(
         String title,
         String companyName,
         String location,
-        String description,
         String link,
         Set<String> tags
 ) {

@@ -50,21 +50,20 @@ public class VacancyParser {
 
             Set<String> tags = new HashSet<>(vacancy.select(TAGS_SELECTOR).eachText());
 
-            Vacancy v = new Vacancy();
-            v.setTitle(title);
-            v.setCompanyName(company);
-            v.setLink(fullLink);
-            v.setLocation(location);
-            v.setTags(tags);
+            Vacancy v = createVacancy(title, company, fullLink, location, tags);
             result.add(v);
         }
         return result;
     }
 
-    public String parseDescription(Document doc) {
-        Element el = doc.selectFirst("div[data-testid='careerPage']");
-        String text = el != null ? el.text() : "";
-        return text.length() > 2000 ? text.substring(0, 2000) : text;
+    private static Vacancy createVacancy(String title, String company, String fullLink, String location, Set<String> tags) {
+        Vacancy v = new Vacancy();
+        v.setTitle(title);
+        v.setCompanyName(company);
+        v.setLink(fullLink);
+        v.setLocation(location);
+        v.setTags(tags);
+        return v;
     }
 }
 

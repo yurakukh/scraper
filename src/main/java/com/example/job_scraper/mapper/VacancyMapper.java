@@ -29,7 +29,6 @@ public class VacancyMapper {
                 vacancy.getTitle(),
                 vacancy.getCompanyName(),
                 vacancy.getLocation(),
-                vacancy.getDescription(),
                 vacancy.getLink(),
                 vacancy.getTags()
         );

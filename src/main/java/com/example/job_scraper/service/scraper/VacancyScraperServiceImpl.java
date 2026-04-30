@@ -36,23 +36,7 @@ public class VacancyScraperServiceImpl implements VacancyScraperService {
         String html = playwrightService.getPageContent(URL);
         Document document = Jsoup.parse(html);
         List<Vacancy> vacancies = vacancyParser.parse(document);
-        enrichWithDescription(vacancies);
-
         vacancyService.syncVacancies(vacancies);
     }
 
-    private void enrichWithDescription(List<Vacancy> vacancies) {
-        vacancies.stream()
-                .limit(20) // Limit to first 20 vacancies to avoid too many requests
-                .forEach(v -> {
-                    try {
-                        String html = playwrightService.getJobDescription(v.getLink());
-                        Document doc = Jsoup.parse(html);
-                        String description = vacancyParser.parseDescription(doc);
-                        v.setDescription(description);
-                    } catch (Exception e) {
-                        System.out.println("Failed to fetch description for vacancy: " + v.getLink());
-                    }
-                });
-    }
 }
