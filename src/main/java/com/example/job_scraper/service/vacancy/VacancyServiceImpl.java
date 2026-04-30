@@ -57,7 +57,6 @@ public class VacancyServiceImpl implements VacancyService {
         target.setTitle(source.getTitle());
         target.setCompanyName(source.getCompanyName());
         target.setLocation(source.getLocation());
-        target.setDescription(source.getDescription());
         target.getTags().clear();
         target.getTags().addAll(source.getTags());
     }

@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
@@ -31,9 +30,6 @@ public class Vacancy {
     private String companyName;
 
     private String location;
-
-    @Column(length = 2000)
-    private String description;
 
     @Column(unique = true, nullable = false, length = 500)
     private String link;

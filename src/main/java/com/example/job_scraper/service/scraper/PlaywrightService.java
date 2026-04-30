@@ -8,11 +8,10 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class PlaywrightService {
-
-    private static final int MAX_PAGINATION_ITERATIONS = 1;
     private static final String JOB_ITEM_SELECTOR = "div[data-testid='job-list-item']";
     private static final String LOAD_MORE_BUTTON_SELECTOR = "button[data-testid='load-more']";
-    public static final String DESCRIPTION_SELECTOR = "div[data-testid='careerPage']";
+    private static final int MAX_SCROLL = 30;
+    public static final int MAX_VACANCIES = 200;
 
     private Playwright playwright;
     private Browser browser;
@@ -21,7 +20,6 @@ public class PlaywrightService {
     @PostConstruct
     public void init() {
         playwright = Playwright.create();
-
         browser = playwright.chromium().launch(
                 new BrowserType.LaunchOptions().setHeadless(true)
         );
@@ -32,7 +30,6 @@ public class PlaywrightService {
     }
 
     public String getPageContent(String url) {
-
         Page page = createPage();
         navigate(page,url, WaitUntilState.DOMCONTENTLOADED);
         page.waitForSelector(JOB_ITEM_SELECTOR);
@@ -40,18 +37,6 @@ public class PlaywrightService {
         String content = page.content();
         page.close();
         return content;
-    }
-
-    public String getJobDescription(String url) {
-
-        String cleanUrl = url.split("#")[0];
-
-        try (Page page = createPage()) {
-            navigate(page, cleanUrl, WaitUntilState.LOAD);
-            page.waitForSelector(DESCRIPTION_SELECTOR);
-            page.waitForTimeout(2000);
-            return page.content();
-        }
     }
 
     private Page createPage() {
@@ -63,25 +48,31 @@ public class PlaywrightService {
     }
 
     private void loadAllVacancies(Page page) {
-        int previousCount = 0;
-        for (int i = 0; i < MAX_PAGINATION_ITERATIONS; i++) {
-            int currentCount = page.locator(JOB_ITEM_SELECTOR).count();
 
+        int previousCount = 0;
+
+
+        Locator button = page.locator(LOAD_MORE_BUTTON_SELECTOR);
+        if (button.count() > 0) {
+            button.first().click();
+            page.waitForTimeout(3000);
+        }
+
+        while (true) {
+            int currentCount = page.locator(JOB_ITEM_SELECTOR).count();
+            System.out.println("Loaded: " + currentCount);
+
+            if (currentCount >= MAX_VACANCIES) {
+                break;
+            }
             if (currentCount == previousCount) {
                 break;
             }
 
             previousCount = currentCount;
-            Locator button = page.locator(LOAD_MORE_BUTTON_SELECTOR);
 
-            if (button.count() > 0) {
-                button.first().click();
-                page.waitForFunction(
-                        "document.querySelectorAll(\"" + JOB_ITEM_SELECTOR + "\").length > " + previousCount
-                );
-            } else {
-                break;
-            }
+            page.mouse().wheel(0, 3000);
+            page.waitForTimeout(2000);
         }
     }
 
