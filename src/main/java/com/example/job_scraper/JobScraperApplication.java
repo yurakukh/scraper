@@ -9,8 +9,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 @SpringBootApplication
 public class JobScraperApplication {
-
-	public static void main(String[] args) {
-		SpringApplication.run(JobScraperApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(JobScraperApplication.class, args);
+    }
 }

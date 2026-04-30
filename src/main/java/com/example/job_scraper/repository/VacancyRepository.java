@@ -19,6 +19,6 @@ public interface VacancyRepository extends JpaRepository<Vacancy, Long> {
     @EntityGraph(attributePaths = "tags")
     Optional<Vacancy> findById(Long id);
 
-    @Query("FROM Vacancy v")
+    @Query(value = "SELECT * FROM vacancies", nativeQuery = true)
     List<Vacancy> findAllIncludingDeleted();
 }

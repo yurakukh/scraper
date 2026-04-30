@@ -23,7 +23,7 @@ Or you can check it out using Google Sheets:
 
 ## 🚀 API Endpoints (example)
 ```
-GET /vacancies
+GET /jobs
 ```
 
 Supports pagination and filtering.
@@ -38,6 +38,35 @@ Supports pagination and filtering.
 * Handles duplicates (update existing, add new, mark removed)
 * Scheduled background scraping
 * Data export (CSV)
+
+---
+
+## Scraping Limit
+
+The scraper intentionally limits the number of processed vacancies per run.
+
+- Configurable via: `scraper.max-vacancies`
+- Default value: `200`
+
+This cap is introduced deliberately to:
+- avoid overloading target websites
+- keep scraping time predictable
+- prevent excessive database growth during development/testing
+
+This is not a hard system limitation and can be adjusted depending on requirements.
+
+---
+
+## Vacancy Description
+
+Vacancy descriptions are not fetched intentionally.
+
+Reasons:
+- Many job platforms require additional navigation or redirects to access full descriptions
+- This significantly slows down scraping
+- Increases load on target websites
+
+Since the task allows this field to be optional, the decision was made to skip it in favor of performance and simplicity.
 
 ---
 

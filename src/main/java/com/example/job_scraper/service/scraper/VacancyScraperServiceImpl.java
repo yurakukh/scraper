@@ -25,11 +25,15 @@ public class VacancyScraperServiceImpl implements VacancyScraperService {
     private final VacancyService vacancyService;
 
     @Async
-    @Scheduled(fixedDelay = 3600000)
+    @Scheduled(fixedDelayString = "${scraper.schedule.fixed-delay-ms}")
     public void scheduledScrape() {
-        log.info("Scarping started at: {}", LocalDateTime.now());
-        scrape();
-        log.info("Scarping ended at: {}", LocalDateTime.now());
+        log.info("Scraping started at: {}", LocalDateTime.now());
+        try {
+            scrape();
+        } catch (Exception e) {
+            log.error("Error during scraping", e);
+        }
+        log.info("Scraping ended at: {}", LocalDateTime.now());
     }
 
     @Override
