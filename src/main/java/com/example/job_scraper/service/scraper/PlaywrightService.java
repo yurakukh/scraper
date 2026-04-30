@@ -60,7 +60,6 @@ public class PlaywrightService {
 
         while (true) {
             int currentCount = page.locator(JOB_ITEM_SELECTOR).count();
-            System.out.println("Loaded: " + currentCount);
 
             if (currentCount >= MAX_VACANCIES) {
                 break;

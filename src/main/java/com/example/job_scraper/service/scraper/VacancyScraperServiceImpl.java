@@ -24,11 +24,7 @@ public class VacancyScraperServiceImpl implements VacancyScraperService {
     @Async
     @Scheduled(fixedDelay = 3600000)
     public void scheduledScrape() {
-        System.out.println("Scraping started: " + LocalDateTime.now());
-
         scrape();
-
-        System.out.println("Scraping finished: " + LocalDateTime.now());
     }
 
     @Override
