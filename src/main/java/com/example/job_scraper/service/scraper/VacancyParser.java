@@ -63,7 +63,8 @@ public class VacancyParser {
 
     public String parseDescription(Document doc) {
         Element el = doc.selectFirst("div[data-testid='careerPage']");
-        return el != null ? el.text().substring(0, 999) : "";
+        String text = el != null ? el.text() : "";
+        return text.length() > 2000 ? text.substring(0, 2000) : text;
     }
 }
 

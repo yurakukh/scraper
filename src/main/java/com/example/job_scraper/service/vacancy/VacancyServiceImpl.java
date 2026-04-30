@@ -40,55 +40,17 @@ public class VacancyServiceImpl implements VacancyService {
     @Override
     public void syncVacancies(List<Vacancy> scrapedVacancies) {
 
-        // беремо ВСІ записи (включно з deleted)
-        List<Vacancy> existingVacancies = vacancyRepository.findAllIncludingDeleted();
-
-        // мапа link → vacancy (захист від дубля в БД)
-        Map<String, Vacancy> existingByLink = existingVacancies.stream()
-                .collect(Collectors.toMap(
-                        Vacancy::getLink,
-                        v -> v,
-                        (v1, v2) -> v1 // якщо дубль — беремо перший
-                ));
-
-        Set<String> scrapedLinks = new HashSet<>();
-        List<Vacancy> toSave = new ArrayList<>();
+        Map<String, Vacancy> existingByLink = loadExistingVacancies();
+        Set<String> scrapedLinks = extractLinks(scrapedVacancies);
+        Map<String, Vacancy> result = new HashMap<>();
 
         for (Vacancy scraped : scrapedVacancies) {
-
-            scrapedLinks.add(scraped.getLink());
-
-            Vacancy existing = existingByLink.get(scraped.getLink());
-
-            if (existing != null) {
-                // UPDATE
-                update(existing, scraped);
-                existing.setDeleted(false); // якщо був soft deleted — відновлюємо
-                toSave.add(existing);
-            } else {
-                // CREATE
-                scraped.setDeleted(false);
-                toSave.add(scraped);
-            }
+            Vacancy merged = merge(scraped, existingByLink.get(scraped.getLink()));
+            result.put(merged.getLink(), merged);
         }
 
-        // SOFT DELETE тих, яких більше немає
-        for (Vacancy existing : existingVacancies) {
-            if (!scrapedLinks.contains(existing.getLink())) {
-                if (!existing.isDeleted()) {
-                    existing.setDeleted(true);
-                    toSave.add(existing);
-                }
-            }
-        }
-
-        // 🔥 дедуплікація перед save (критично)
-        Map<String, Vacancy> unique = new HashMap<>();
-        for (Vacancy v : toSave) {
-            unique.put(v.getLink(), v);
-        }
-
-        vacancyRepository.saveAll(unique.values());
+        markDeleted(existingByLink, scrapedLinks, result);
+        vacancyRepository.saveAll(result.values());
     }
 
     private void update(Vacancy target, Vacancy source) {
@@ -98,5 +60,44 @@ public class VacancyServiceImpl implements VacancyService {
         target.setDescription(source.getDescription());
         target.getTags().clear();
         target.getTags().addAll(source.getTags());
+    }
+
+    private Map<String, Vacancy> loadExistingVacancies() {
+        return vacancyRepository.findAllIncludingDeleted().stream()
+                .collect(Collectors.toMap(
+                        Vacancy::getLink,
+                        v -> v,
+                        (v1, v2) -> v1
+                ));
+    }
+
+    private Set<String> extractLinks(List<Vacancy> vacancies) {
+        return vacancies.stream()
+                .map(Vacancy::getLink)
+                .collect(Collectors.toSet());
+    }
+
+    private Vacancy merge(Vacancy scraped, Vacancy existing) {
+        if (existing == null) {
+            scraped.setDeleted(false);
+            return scraped;
+        }
+
+        update(existing, scraped);
+        existing.setDeleted(false);
+        return existing;
+    }
+
+    private void markDeleted(
+            Map<String, Vacancy> existingByLink,
+            Set<String> scrapedLinks,
+            Map<String, Vacancy> result
+    ) {
+        for (Vacancy existing : existingByLink.values()) {
+            if (!scrapedLinks.contains(existing.getLink()) && !existing.isDeleted()) {
+                existing.setDeleted(true);
+                result.put(existing.getLink(), existing);
+            }
+        }
     }
 }
