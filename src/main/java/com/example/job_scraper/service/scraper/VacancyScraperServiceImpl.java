@@ -2,11 +2,13 @@ package com.example.job_scraper.service.scraper;
 
 import com.example.job_scraper.model.Vacancy;
 import com.example.job_scraper.service.vacancy.VacancyService;
-import jakarta.annotation.PostConstruct;
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -19,6 +21,16 @@ public class VacancyScraperServiceImpl implements VacancyScraperService {
     private final PlaywrightService playwrightService;
     private final VacancyService vacancyService;
 
+    @Async
+    @Scheduled(fixedDelay = 3600000)
+    public void scheduledScrape() {
+        System.out.println("Scraping started: " + LocalDateTime.now());
+
+        scrape();
+
+        System.out.println("Scraping finished: " + LocalDateTime.now());
+    }
+
     @Override
     public void scrape() {
         String html = playwrightService.getPageContent(URL);
@@ -27,26 +39,11 @@ public class VacancyScraperServiceImpl implements VacancyScraperService {
         enrichWithDescription(vacancies);
 
         vacancyService.syncVacancies(vacancies);
-
-        //for testing
-        vacancies.forEach(v ->
-                System.out.println(
-                        "-----------------------------\n"
-                        + "Title: " + v.getTitle() + "\n"
-                        + "Company: " + v.getCompanyName() + "\n"
-                        + "Link: " + v.getLink() + "\n"
-                        + "Location: " + v.getLocation() + "\n"
-                        + "Tags: " +  v.getTags() + "\n"
-                        + "Description: " + v.getDescription() + "\n"
-                        + "-----------------------------\n"
-                )
-        );
-
     }
 
     private void enrichWithDescription(List<Vacancy> vacancies) {
         vacancies.stream()
-                .limit(10)
+                .limit(20) // Limit to first 20 vacancies to avoid too many requests
                 .forEach(v -> {
                     try {
                         String html = playwrightService.getJobDescription(v.getLink());
