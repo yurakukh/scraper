@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 public class PlaywrightService {
     private static final String JOB_ITEM_SELECTOR = "div[data-testid='job-list-item']";
     private static final String LOAD_MORE_BUTTON_SELECTOR = "button[data-testid='load-more']";
-    private static final int MAX_SCROLL = 30;
     public static final int MAX_VACANCIES = 200;
 
     private Playwright playwright;
@@ -71,7 +70,7 @@ public class PlaywrightService {
             previousCount = currentCount;
 
             page.mouse().wheel(0, 3000);
-            page.waitForTimeout(2000);
+            page.waitForTimeout(1000);
         }
     }
 
